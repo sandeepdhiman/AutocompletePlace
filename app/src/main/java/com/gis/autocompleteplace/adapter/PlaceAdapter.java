@@ -43,7 +43,12 @@ public class PlaceAdapter extends ArrayAdapter<PlaceDataModel> {
     @Nullable
     @Override
     public PlaceDataModel getItem(int position) {
-        return resultList.get(position);
+        if (resultList.size()>0){
+            return resultList.get(position);
+        }else {
+            return null;
+        }
+
     }
 
     @Override
@@ -59,8 +64,10 @@ public class PlaceAdapter extends ArrayAdapter<PlaceDataModel> {
         }else {
             holder = (ViewHolder) convertView.getTag();
         }
-        holder.description.setText(resultList.get(position).getFullText());
-        // Lookup view for data population
+        if(position<resultList.size()) {
+            holder.description.setText(resultList.get(position).getFullText());
+
+        }// Lookup view for data population
         // Populate the data into the template view using the data object
         // Return the completed view to render on screen
         return convertView;
@@ -75,7 +82,7 @@ public class PlaceAdapter extends ArrayAdapter<PlaceDataModel> {
                 FilterResults filterResults =  new FilterResults();
                 if (constraint!=null){
                   resultList.clear();
-                  List<AutocompletePrediction> addresses = MapExtention.getAutoComplete(placesClient,constraint);
+                  List<AutocompletePrediction> addresses = MapExtention.getAutoComplete(context,placesClient,constraint);
                     if (addresses!=null){
                         for (AutocompletePrediction prediction:addresses){
                             resultList.add(new PlaceDataModel(prediction.getPlaceId(),prediction.getFullText(new StyleSpan(

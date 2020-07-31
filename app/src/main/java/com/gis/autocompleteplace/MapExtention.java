@@ -1,5 +1,8 @@
 package com.gis.autocompleteplace;
 
+import android.app.ProgressDialog;
+import android.content.Context;
+
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.android.libraries.places.api.model.AutocompletePrediction;
@@ -21,12 +24,12 @@ private static Long  TASK_AWAIT = 120L;
 private float MAP_CAMERA_ZOOM = 11f;
 private int MAP_CAMERA_ZOOM_INT = 11;
 
-    public static List<AutocompletePrediction>getAutoComplete(PlacesClient placesClient,CharSequence constraint){
+    public static List<AutocompletePrediction>getAutoComplete(Context context,PlacesClient placesClient, CharSequence constraint){
     List<AutocompletePrediction>list =  new ArrayList<>();
         AutocompleteSessionToken token = AutocompleteSessionToken.newInstance();
-        FindAutocompletePredictionsRequest request =FindAutocompletePredictionsRequest.builder().setTypeFilter(TypeFilter.ADDRESS).setSessionToken(token).setQuery(constraint.toString()).build();
+        FindAutocompletePredictionsRequest request =FindAutocompletePredictionsRequest.builder().setCountry("IN").setTypeFilter(TypeFilter.ADDRESS).setSessionToken(token).setQuery(constraint.toString()).build();
         Task<FindAutocompletePredictionsResponse> prediction =placesClient.findAutocompletePredictions(request);
-
+        //ProgressDialog progressDialog = ProgressDialog.show(context,"","Please wait...",false);
         try {
             Tasks.await(prediction, TASK_AWAIT, TimeUnit.SECONDS);
         } catch (ExecutionException e) {
@@ -38,11 +41,14 @@ private int MAP_CAMERA_ZOOM_INT = 11;
         }
 
         if (prediction.isSuccessful()) {
+            //progressDialog.dismiss();
             FindAutocompletePredictionsResponse findAutocompletePredictionsResponse = prediction.getResult();
             if (findAutocompletePredictionsResponse!=null) {
                 list = findAutocompletePredictionsResponse.getAutocompletePredictions();
             }
             return list;
+        }else {
+            //progressDialog.dismiss();
         }
 
 
